@@ -12,8 +12,11 @@ struct ContentView: View {
     
     @State var searchText: String = ""
     @State var alphabetical: Bool = false
+    @State var currentSelection = APType.all
     
     var filteredPredators: [ApexPredator] {
+        predators.filter(by: currentSelection)
+        
         predators.sort(by: alphabetical)
         
         return predators.search(for: searchText)
@@ -54,7 +57,7 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Apex Predators")
-             .searchable(text: $searchText)
+            .searchable(text: $searchText)
             .autocorrectionDisabled()
             .animation(.default, value: searchText)
             .toolbar {
@@ -66,6 +69,18 @@ struct ContentView: View {
                     } label: {
                         Image(systemName: alphabetical  ? "film" : "textformat")
                             .symbolEffect(.bounce, value: alphabetical)
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Picker("Filter", selection: $currentSelection) {
+                            ForEach(APType.allCases) { type in
+                                Label(type.rawValue.capitalized, systemImage: type.icon)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "slider.horizontal.3")
                     }
                 }
             }
