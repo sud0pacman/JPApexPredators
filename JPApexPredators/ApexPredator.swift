@@ -22,7 +22,7 @@ struct ApexPredator: Decodable, Identifiable {
         name.lowercased().replacingOccurrences(of: " ", with: "")
     }
     
-    struct MovieScence: Decodable {
+    struct MovieScence: Decodable, Identifiable {
         let id: Int
         let movie: String
         let sceneDescription: String
