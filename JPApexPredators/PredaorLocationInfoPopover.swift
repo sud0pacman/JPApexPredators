@@ -211,25 +211,3 @@ struct PredaorLocationInfoPopover: View {
         predator: Predators().apexPredators[0]
     )
 }
-
-func fetchMapSnapshot(for coordinate: CLLocationCoordinate2D, completion: @escaping (UIImage?) -> Void) {
-    let options = MKMapSnapshotter.Options()
-    
-    // Rasmning o'lchami va qamrab oladigan hududi
-    options.region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 1000, longitudinalMeters: 1000)
-    options.size = CGSize(width: 300, height: 300) // O'zingizga kerakli o'lcham
-    options.scale = UIScreen.main.scale
-    
-    let snapshotter = MKMapSnapshotter(options: options)
-    
-    snapshotter.start { snapshot, error in
-        if let error = error {
-            print("Xatolik yuz berdi: \(error.localizedDescription)")
-            completion(nil)
-            return
-        }
-        
-        // snapshot?.image - bu siz qidirayotgan UIImage
-        completion(snapshot?.image)
-    }
-}
