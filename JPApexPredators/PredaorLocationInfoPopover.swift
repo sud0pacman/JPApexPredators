@@ -28,7 +28,7 @@ enum InfoDialogActions: Identifiable, CaseIterable {
     }
 }
 
-struct PopoverExampleView: View {
+struct PredaorLocationInfoPopover: View {
     let predator: ApexPredator
     
     @State private var mapImage: UIImage? = nil
@@ -207,7 +207,7 @@ struct PopoverExampleView: View {
 #Preview {
     
     
-    PopoverExampleView(
+    PredaorLocationInfoPopover(
         predator: Predators().apexPredators[0]
     )
 }

@@ -14,16 +14,24 @@ struct PredatorMap: View {
     @State var position: MapCameraPosition
     @State var sattelite: Bool = false
     
+    @State private var isShowingPopover = false
+    @State private var selectedPredator: ApexPredator? = nil
+    
     var body: some View {
-        Map(position: $pos ion) {
+        Map(position: $position) {
             ForEach(predators.apexPredators) { predator in
                 Annotation(predator.name, coordinate: predator.location) {
-                    Image(predator.image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 100)
-                        .shadow(color: .white, radius: 3)
-                        .scaleEffect(x: -1)
+                    Button {
+                        selectedPredator = predator
+                        self.isShowingPopover = true
+                    } label: {
+                        Image(predator.image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 100)
+                            .shadow(color: .white, radius: 3)
+                            .scaleEffect(x: -1)
+                    }
                 }
             }
         }
@@ -31,6 +39,9 @@ struct PredatorMap: View {
                   ? .imagery(elevation: .realistic)
                   : .standard(elevation: .realistic)
         )
+        .popover(item: $selectedPredator) { predator in
+            PredaorLocationInfoPopover(predator: predator)
+        }
         .overlay(alignment: .bottomTrailing) {
             Button {
                 sattelite.toggle()

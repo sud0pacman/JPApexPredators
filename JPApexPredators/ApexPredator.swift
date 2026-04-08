@@ -34,6 +34,14 @@ struct ApexPredator: Decodable, Identifiable {
     }
 }
 
+extension ApexPredator: Equatable {
+    static func == (lhs: ApexPredator, rhs: ApexPredator) -> Bool {
+        // Return true if you consider these two instances "equal"
+        return lhs.id == rhs.id
+    }
+}
+
+
 enum APType : String, Decodable, CaseIterable, Identifiable  {
     case all
     case land

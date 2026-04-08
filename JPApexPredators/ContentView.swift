@@ -2,74 +2,81 @@
 //  ContentView.swift
 //  JPApexPredators
 //
-//  Created by G'aniyev Muhammad on 04/04/26.
-//
 
 import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    let predators = Predators()
+    @StateObject var predators = Predators()
     
     @State var searchText: String = ""
     @State var alphabetical: Bool = false
     @State var currentSelection = APType.all
     
-    var filteredPredators: [ApexPredator] {
-        predators.filter(by: currentSelection)
-        
-        predators.sort(by: alphabetical)
-        
-        return predators.search(for: searchText)
-    }
-    
     var body: some View {
         NavigationStack {
-            List(filteredPredators) { predator in
-                NavigationLink {
-                    PredatorDetail(predator: predator, position: .camera(MapCamera(
-                        centerCoordinate: predator.location,
-                        distance: 30000
-                    )))
-                } label: {
-                    HStack {
-                        // Dinasour Image
-                        Image(predator.image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 100, height: 100)
-                            .shadow(color: .white, radius: 1)
-                        
-                        VStack(alignment: .leading) {
-                            // Name
-                            Text(predator.name)
-                                .fontWeight(.bold)
+            List {
+                ForEach(predators.apexPredators) { predator in
+                    NavigationLink {
+                        PredatorDetail(predator: predator, position: .camera(MapCamera(
+                            centerCoordinate: predator.location,
+                            distance: 30000
+                        )))
+                    } label: {
+                        HStack {
+                            Image(predator.image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 100)
+                                .shadow(color: .white, radius: 1)
                             
-                            // Type
-                            Text(predator.type.rawValue.capitalized)
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .padding(.horizontal, 13)
-                                .padding(.vertical, 5)
-                                .background(predator.type.background)
-                                .clipShape(.capsule)
-                            
+                            VStack(alignment: .leading) {
+                                Text(predator.name)
+                                    .fontWeight(.bold)
+                                
+                                Text(predator.type.rawValue.capitalized)
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+                                    .padding(.horizontal, 13)
+                                    .padding(.vertical, 5)
+                                    .background(predator.type.background)
+                                    .clipShape(.capsule)
+                            }
                         }
                     }
+                }
+                .onDelete { offsets in
+                    predators.delete(at: offsets)
                 }
             }
             .navigationTitle("Apex Predators")
             .searchable(text: $searchText)
             .autocorrectionDisabled()
             .animation(.default, value: searchText)
+            .onAppear {
+                predators.applyFilters(type: currentSelection, alphabetical: alphabetical, searchText: searchText)
+            }
+            .onChange(of: searchText) {
+                predators.applyFilters(type: currentSelection, alphabetical: alphabetical, searchText: searchText)
+            }
+            .onChange(of: currentSelection) {
+                predators.applyFilters(type: currentSelection, alphabetical: alphabetical, searchText: searchText)
+            }
+            .onChange(of: alphabetical) {
+                predators.applyFilters(type: currentSelection, alphabetical: alphabetical, searchText: searchText)
+            }
             .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    EditButton()
+                }
+                
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        withAnimation() {
+                        withAnimation {
                             alphabetical.toggle()
                         }
                     } label: {
-                        Image(systemName: alphabetical  ? "film" : "textformat")
+                        Image(systemName: alphabetical ? "film" : "textformat")
                             .symbolEffect(.bounce, value: alphabetical)
                     }
                 }
